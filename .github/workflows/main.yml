@@ -8,7 +8,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   test:
@@ -44,6 +43,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Set lowercased image name
+        run: echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -75,7 +77,6 @@ jobs:
       - name: Mock AWS Deployment via Terraform
         run: |
           echo "Simulating applying Terraform infrastructure adjustments..."
-          echo "VPC, ECS, ALB verified."
           echo "Updating ECS service with new Docker image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
           echo "Deployment successful."
 
